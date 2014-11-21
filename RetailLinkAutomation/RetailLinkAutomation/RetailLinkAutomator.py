@@ -4,6 +4,10 @@
 """
 
 from . import *
+import mechanize
+import urllib
+from bs4 import BeautifulSoup as BS
+
 
 class RetailLinkAutomator(object):
 	
@@ -12,12 +16,9 @@ class RetailLinkAutomator(object):
 		sets up browser mechanize object and sets default header		
 	"""
 	def __init__(self, User=None, Pass=None):
-		import mechanize		
 		self.br = mechanize.Browser()
 		self.br.set_handle_robots(False)
-		#self.br.set_handle_refresh(False) # Do I want to do this?
-		self.br.addheaders = [('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E; InfoPath.3; MS-RTC EA 2')]
-		
+		self.br.addheaders = [('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E; InfoPath.3; MS-RTC EA 2')]		
 		self.User = User
 		self.Pass = Pass
 		
@@ -56,15 +57,33 @@ class RetailLinkAutomator(object):
 				return self.br.follow_link(link)
 	
 	""" Function to open the My Reports interface from the DSS page """
-	def goToMyReports(self):
-		import urllib
+	def goToMyReports(self):		
 		postUrl = "https://retaillink.wal-mart.com/mydss/mySavedReports.aspx"
 		params = {"ApplicationId" : "300"}
 		data = urllib.urlencode(params)		
 		return self.br.open(postUrl,data)
 		
-	""" Function to extract report names and IDs from the My Reports page """
+	""" Function to extract report names and IDs from the My Reports page
+		Returns a list of report objects
+	"""
+	def extractReports(self):	
+		soup = BS(self.br.response().read())
+
+		reports = []
+		for sp in soup.find_all("span", {"reportinfostring":True}):				
+			reports.append(self.getReportFromSpan(sp))
+		
+		print(reports)
+		return reports
 	
+	""" Function to extract and build a report object from a span BS tag """
+	def getReportFromSpan(self, sp):
+		infoString = sp['reportinfostring']
+		reportId = infoString.split("|")[0]
+		reportName = sp.img.string
+		report = RetailLinkReport(ID=reportId, Name=reportName)
+		return report
+		
 	
 	""" Function to print out the forms in the last response """
 	def printForms(self):
@@ -110,5 +129,4 @@ class RetailLinkAutomator(object):
 		
 	
 if __name__ == '__main__':
-	import RLAutomationUnitTests
 	RLAutomationUnitTests.testAll()
