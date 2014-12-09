@@ -10,7 +10,26 @@ def testAll():
 #	testLogin(autoBot1) # passed
 #	testGoToDSSPage(autoBot1) # passed
 #	testGoToMyReports(autoBot1) # passed
-	testExtractReports(autoBot1)
+#	testExtractReports(autoBot1) # passed
+	testGetReportDef(autoBot1)
+
+""" Function to test pulling a report definition out of a 
+	saved retail link report
+"""
+def testGetReportDef(autoBot):
+	print("\r\n********  BEGIN TEST FOR testGetReportDef()  **************")
+	loginCredList = readLoginInfoFromFile()
+	autoBot.getLoginPage()
+	autoBot.loginFromLoginPage(loginCredList[0]['User'], loginCredList[0]['Pass'])
+	autoBot.goToDSSPage()
+	autoBot.goToMyReports()
+	reports = autoBot.extractReports()
+	
+	reports = [report for report in reports if report.Name == "zzz_2014_zzz_RLDS_DailyStoreItemWTDColumnsDailyForCurrentWeek_StoreDetail_Daily_002_001"]
+	autoBot.getReportDefs(reports)
+	
+	print("Method existed successfully")
+	print("########## END TEST FOR testGetReportDef()  ################\r\n")		
 	
 """ Function to test extraction of reports from the MyReports page """
 def testExtractReports(autoBot):
@@ -20,7 +39,11 @@ def testExtractReports(autoBot):
 	autoBot.loginFromLoginPage(loginCredList[0]['User'], loginCredList[0]['Pass'])
 	autoBot.goToDSSPage()
 	autoBot.goToMyReports()
-	autoBot.extractReports()
+	reports = autoBot.extractReports()
+	
+	print("Extracted %s reports." % len(reports))
+	for report in reports:
+		print("ID: %s, Name: %s	" % (report.ID, report.Name))
 
 	print("Method existed successfully")
 	print("########## END TEST FOR testExtractReports()  ################\r\n")			
@@ -97,15 +120,6 @@ def testLogin(autoBot):
 	Cookies should not be shared.
 """
 def testMultiLogin():
-	return None
-""" Function to test the enumeration of all retail link reports
-"""
-def testReportEnum():
-	return None
-""" Function to test pulling a report definition out of a 
-	saved retail link report
-"""
-def testGetReportDef():
 	return None
 	
 """ Function to test the saving of a stored report definition from retail link 

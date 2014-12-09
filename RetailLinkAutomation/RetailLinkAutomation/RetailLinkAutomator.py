@@ -72,9 +72,86 @@ class RetailLinkAutomator(object):
 		reports = []
 		for sp in soup.find_all("span", {"reportinfostring":True}):				
 			reports.append(self.getReportFromSpan(sp))
-		
-		print(reports)
+			
 		return reports
+		
+	""" Function that will get the report definitions of all reports
+		passed in as a list. 
+	"""
+	def getReportDefs(self, reports):
+		for report in reports:
+			self.getReportDefPage(report.ID)
+			report.Definition = self.extractReportDef()
+		
+	""" Function that gets the response page with definition in the HTML for
+		a report ID
+	"""
+	def getReportDefPage(self, reportID):
+		postUrl = "https://retaillink.wal-mart.com/mydss/Report_Builder.aspx"
+		params = {
+					"reopen":"true",
+					"AppId":"300",
+					"jobid":reportID,
+					"getSavedRequests":"1",
+					"isShared":"N",
+					"isScheduled":"N",
+					"country_cd":"US",
+					"divid":"1"
+		}
+		data = urllib.urlencode(params)
+		return self.br.open(postUrl,data)
+	
+	""" Function to extract the reports definition form or raw HTML,
+		whichever is easier.
+	"""
+	def extractReportDef(self):
+		self.writeControls()
+		self.writeLastResponse()
+		
+		soup = BS(self.br.response().read())
+		for eKeyListTag in soup.find_all("input", {"id":"hdnAllEkeysonMemory"}):				
+			eKeyList = eKeyListTag["value"].split(",")
+			print(eKeyList)
+			
+		for eKeyNumListTag in soup.find_all("input", {"id":"hdnAllKeyNumOnMemory"}):				
+			eKeyNumList = eKeyNumListTag["value"].split(",")
+			print(eKeyNumList)
+		
+		self.br.select_form("Memory")
+		criteria = self.buildCriteriaString(eKeyList, eKeyNumList)
+		return criteria
+	
+	""" Function to build out the criteria string that will
+		be the definition of the report
+	"""
+	def buildCriteriaString(self, eKeyList, eKeyNumList):	
+		sep1 = "\t^\t"
+		sep2 = "\t:\t"
+		stepList = []
+		criteria = ""
+		
+		# Get all the step controls
+		for control in self.br.form.controls:
+			if(control.name == "Step"):
+				stepList.append(control.value)				
+		
+		# Loop over the valid Ekeys and extract them from the steps
+		for i in xrange(len(eKeyList)):
+			eKey = str(eKeyList[i])
+			eKeyNum = str(eKeyNumList[i])
+			
+			for step in stepList:
+				if(eKey in step):
+					criteria = criteria + sep1 + eKeyNum + sep2 + step
+		
+		criteria = criteria.lstrip(sep1)
+		
+		print(criteria)
+		with open("Output\criteria.txt", "wb") as writer:
+			writer.write(criteria)
+			
+		return criteria
+		
 	
 	""" Function to extract and build a report object from a span BS tag """
 	def getReportFromSpan(self, sp):
@@ -89,6 +166,12 @@ class RetailLinkAutomator(object):
 	def printForms(self):
 		for form in self.br.forms():
 			print("Form name: %s" % form.name)
+		
+	""" Function to write out the last response's forms to a file"""
+	def writeForms(self):
+		with open("Output/currentPageForms.txt", "wb") as curPageForms:
+			for form in self.br.forms():
+				curPageForms.write("Form name: %s" % form.name)
 			
 	""" Function to print out the controls in every form in the
 		last response
@@ -98,7 +181,23 @@ class RetailLinkAutomator(object):
 			self.br.select_form(form.name)
 			for control in self.br.form.controls:
 				print control
-				print("type=%s, name=%s value=%s" %(control.type, control.name, self.br[control.name]))
+				#try:
+					#print("type=%s, name=%s value=%s" %(control.type, control.name, control.value))
+				#except AmbiguityError:
+					#print("type=%s, name=%s" %(control.type, control.name))
+					
+	""" Function to write controls in the last respose to a file
+	"""
+	def writeControls(self):
+		with open("Output/currentPageControls.txt", "wb") as curPageControls:
+			for form in self.br.forms():
+				self.br.select_form(form.name)
+				for control in self.br.form.controls:
+					curPageControls.write("%s\n" % str(control))
+					#try:
+					#	curPageControls.write("type=%s, name=%s value=%s\n" %(control.type, control.name, control.value))
+					#except AmbiguityError:
+					#	curPageControls.write("type=%s, name=%s\n" %(control.type, control.name))
 	
 	""" Function that will print out all the links on the current
 		page """ 
