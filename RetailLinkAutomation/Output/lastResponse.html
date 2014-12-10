@@ -1,199 +1,59 @@
 
-<!--'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-' Changes
-'   xx-xx-2007 - updated how we open report builder with custom groups, this allows 
-'				 us to jump to specific ekeys when creating/modifying a custom group now
-'	01-29-2008 - added several parameters to the menu.aspx iframe call that facilitates
-'				 the specific ekey in report builder and hiding all other ekeys.
-'	02-01-2008 - updated code to force load the "XXX Groups" page when report builder
-'				 loads. This resolves issue of the custom group not loading on report 
-'				 builder load.
-'   02-05-2008 - Added this change
-'
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''-->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 
-<html xmlns="http://www.w3.org/1999/xhtml" >
-<head>
-    <script src="scripts/Report_Builder.js" language="javascript" type="text/javascript"></script>
-    <script src="scripts/Memory.js" language="javascript" type="text/javascript"></script>
-	<script language="javascript" src="scripts/common.js" type="text/javascript"></script>	
-<title>
-	US - zzz_2014_zzz_RLDS_DailyStoreItemWTDColumnsDailyForCurrentWeek_StoreDetail_Daily_002_001
-</title></head>
-<body leftMargin="0" topMargin="0" onload="loadColumnsAtStart();">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
-<link rel='stylesheet' type='text/css' href="StyleSheet/style1024.css" title='style1024'/>
-<link rel='stylesheet' type='text/css' href='StyleSheet/style800.css' title='style800'/>
+<html>
+<head id="Head1"><title>
+	Retail Link
+</title>
 
-<script language='javascript' type="text/javascript">
-var styleTitle = (screen.width > 800) ? 'style1024' : 'style800';
-if(document.styleSheets){
-	for(var i=0; i<document.styleSheets.length; i++) {
-		document.styleSheets[i].disabled = (document.styleSheets[i].title != styleTitle);
-	}
-}
-</script>
-    <form name="frmMain" method="post" action="Report_Builder.aspx" id="frmMain">
+    <script type="text/javascript" src="Scripts/Save_Schedule_Reports.js" language="javascript"></script>
+
+</head>
+<body bgcolor="white" onload="setReqId(); checkIfSaved()">
+    <form name="frmMain" method="post" action="Save_Schedule_Reports.aspx" id="frmMain">
 <div>
-<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJODgzNTEzODM2D2QWCgIFD2QWAgIBDxYCHgNzcmMFJ0J1aWxkaW5nX1dhaXRpbmcuYXNweD9hcHBsaWNhdGlvbmlkPTMwMGQCFQ8WAh4EVGV4dAWhKDxmb3JtIG5hbWU9J01lbW9yeSc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nVXNlcklkJyB2YWx1ZT0ndHlzMTQxNCc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRmlsdGVyJyB2YWx1ZT0nMSc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRmlsdGVyJyB2YWx1ZT0nMic+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRmlsdGVyJyB2YWx1ZT0nMyc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRmlsdGVyJyB2YWx1ZT0nNCc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRmlsdGVyJyB2YWx1ZT0nNSc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRmlsdGVyJyB2YWx1ZT0nNic+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRmlsdGVyJyB2YWx1ZT0nNyc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRmlsdGVyJyB2YWx1ZT0nOCc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRmlsdGVyJyB2YWx1ZT0nOSc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRmlsdGVyJyB2YWx1ZT0nMTAnPjxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J1N0ZXAnIHZhbHVlPSdFMjAwMDAxCToJRjIwMDAwMTAJOglyZXBvcnQJOgljb2x1bW4JOglSZXBvcnQgQ29sdW1ucyAJOglJdGVtIE5icgl+CTE4MDAJfAlTdG9yZSBOYnIJfgkyCXwJRGFpbHkJfgkzYgl8CVBPUyBTdG9yZSBDb3VudAl+CTI1MDIJfAlQT1MgU2FsZXMJfgkyNjA1CXwJUE9TIFF0eQl+CTI2MTAJfAlQT1MgQ29zdAl+CTI2MTgJfAlTSSBNVU1EIFF0eQl+CTE2MzAJfAlTSSBUb3RhbCBNVU1EICQJfgkxNjQwCXwJVG90YWwgQWRqIFF0eSAoIE9IICsgQlIgKQl+CTQ2OTMJfAlUb3RhbCBBZGogUmV0YWlsIEFtbnQgKCBPSCArIEJSICkJfgk0NTg0CXwJR3Jvc3MgU2hpcCBDb3N0CX4JMjg1MAl8CUdyb3NzIFNoaXAgUmV0YWlsCX4JMjg1NQl8CUdyb3NzIFNoaXAgUXR5CX4JMjg2MAl8CUhpc3QgT24gSGFuZCBRdHkJfgkzODU3CXwJT24gSGFuZCBBZGogUXR5CX4JNDUyMgl8CU9uIEhhbmQgQWRqIFJldGFpbCBBbW50CX4JNDY5Mgl8CUJhY2tyb29tIEFkaiBRdHkJfgk0Njg1CXwJQmFja3Jvb20gQWRqIFJldGFpbCBBbXQJfgk0NjkxJz48aW5wdXQgdHlwZT0naGlkZGVuJyBuYW1lPSdTdGVwJyB2YWx1ZT0nRTExMTAxCToJRjEwMTAxMzEJOgl3aGF0CToJd21fY2F0X2dyb3VwX2ZhbWlseQk6CS0xCX4JU2VsZWN0aW9ucyBJbmNsdWRlCToJMDggUEVUUyAmYW1wOyBTVVBQTElFUwl+CUE4CX4JMQl+CTEJfgk0CX4JMAl8CUQxCToJUzEJfgk5OCBCQUtFUlkJfglBOTgJfgkxCX4JMQl+CTQJfgkwCXwJRDEJOglTMQl+CTgwIFNFUlZJQ0UgREVMSQkkCUJVTEsgREVMSSBDQVNFCX4JQTgwOlAxMzE3CX4JMQl+CTEJfgk0CX4JMAl8CUQxCToJUzEJfgk4MCBTRVJWSUNFIERFTEkJJAlERUxJIEdPVVJNRVQJfglBODA6UDEzMTgJfgkxCX4JMQl+CTQJfgkwCXwJRDEJOglTMQl+CTgwIFNFUlZJQ0UgREVMSQkkCU1FQUwgU09MVVRJT05TCX4JQTgwOlAxMzIxCX4JMQl+CTEJfgk0CX4JMAl8CUQxCToJUzEJfgk4MCBTRVJWSUNFIERFTEkJJAlNSVNDRUxMQU5FT1VTCX4JQTgwOlAxMzIyCX4JMQl+CTEJfgk0CX4JMAl8CUQxCToJUzEJfgk4MCBTRVJWSUNFIERFTEkJJAlTT1VQUyBTQU5EV0lDSEVTIFNBTEFEUwl+CUE4MDpQMTMxOQl+CTEJfgkxCX4JNAl+CTAJfAlEMQk6CVMxCX4JODAgU0VSVklDRSBERUxJCSQJU1JWQyBERUxJIFRBU0sJfglBODA6UDUwMzAJfgkxCX4JMQl+CTQJfgkwCXwJRDEJOglTMQl+CTgwIFNFUlZJQ0UgREVMSQkkCVNUQVRFIEZFRVMJfglBODA6UDQyMzYJfgkxCX4JMQl+CTQJfgkwCXwJRDEJOglTMQl+CTgwIFNFUlZJQ0UgREVMSQkkCSYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyYjMTYwOyBIT1QgREVMSQkkCURFTEkgUk9USVNTRVJJRQl+CUE4MDpQMTMyMDpDMzEwOAl+CTEJfgkxCX4JNAl+CTAJfAlEMQk6CVMxCX4JODAgU0VSVklDRSBERUxJCSQJJiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7JiMxNjA7IEhPVCBERUxJCSQJREVMSSBTQUxBRFMgQU5EIE1FQUwgU09MVVRJT05TCX4JQTgwOlAxMzIwOkMzMTAyCX4JMQl+CTEJfgk0CX4JMCc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nU3RlcCcgdmFsdWU9J0UyMDAwMzcJOglGMTAwMDAxMAk6CXdoZW4JOglGdXp6eQk6CS0xCX4JU2VsZWN0aW9ucyBJbmNsdWRlCToJQnkgRnV6enkgRGF0ZXMJJAlUaW1lIFJhbmdlIDEgQ3VycmVudCBXZWVrCX4JSzAxdzAwCX4JMQl+CTEJfgk0CX4JMCc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nU3RlcCcgdmFsdWU9J0UxMDEwMgk6CUYxMDEwMjAJOgl3aGVyZQk6CXdtX3N0b3JlX3R5cGUJOgktMQl+CVNlbGVjdGlvbnMgSW5jbHVkZQk6CVN0b3JlIFR5cGUgQnJlYWtkb3duCSQJQWxsIFN0b3Jlcwl+CURTUzEJfgkxCX4JMQl+CTQJfgkwJz48aW5wdXQgdHlwZT0naGlkZGVuJyBuYW1lPSdTdGVwJyB2YWx1ZT0nNSc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nU3RlcCcgdmFsdWU9JzYnPjxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J1N0ZXAnIHZhbHVlPSc3Jz48aW5wdXQgdHlwZT0naGlkZGVuJyBuYW1lPSdTdGVwJyB2YWx1ZT0nOCc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nU3RlcCcgdmFsdWU9JzknPjxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J1N0ZXAnIHZhbHVlPScxMCc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRXhwVHh0JyB2YWx1ZT0nMSc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRXhwVHh0JyB2YWx1ZT0nMic+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRXhwVHh0JyB2YWx1ZT0nMyc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRXhwVHh0JyB2YWx1ZT0nNCc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRXhwVHh0JyB2YWx1ZT0nNSc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRXhwVHh0JyB2YWx1ZT0nNic+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRXhwVHh0JyB2YWx1ZT0nNyc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRXhwVHh0JyB2YWx1ZT0nOCc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRXhwVHh0JyB2YWx1ZT0nOSc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRXhwVHh0JyB2YWx1ZT0nMTAnPjxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J0Zvcm1hdCcgdmFsdWU9JzQnPjxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J1RpdGxlJyB2YWx1ZT0iIHp6el8yMDE0X3p6el9STERTX0RhaWx5U3RvcmVJdGVtV1REQ29sdW1uc0RhaWx5Rm9yQ3VycmVudFdlZWtfU3RvcmVEZXRhaWxfRGFpbHlfMDAyXzAwMSAiPjxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J0NvbXByZXNlZCcgdmFsdWU9JzEnPjxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J1NjaGVkJyB2YWx1ZT0nJz48aW5wdXQgdHlwZT0naGlkZGVuJyBuYW1lPSdjdXJyX3N0ZXAnIHZhbHVlPScnPjxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J3Jlb3BlbicgdmFsdWU9J3RydWUnPjxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J1JlcUlkJyB2YWx1ZT0nMjkyMTA2MDQnPjxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J3FpZCcgdmFsdWU9J1E2ODAnPjxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J0FwcElkJyB2YWx1ZT0nMzAwJz48aW5wdXQgdHlwZT0naGlkZGVuJyBuYW1lPSdleGVfaWQnIHZhbHVlPScyNjQnPjxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J0RpdklkJyB2YWx1ZT0nMSc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nQ291bnRyeUNvZGUnIHZhbHVlPSdVUyc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nU2NoZWRUeXBlJyBpZD0nU2NoZWRUeXBlJyB2YWx1ZT0nJz48aW5wdXQgdHlwZT0naGlkZGVuJyBuYW1lPSdFeHBpcmVEYXRlJyBpZD0nRXhwaXJlRGF0ZScgdmFsdWU9Jyc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nTGV0dGVyJyB2YWx1ZT0nNjUnPjxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J3Jvd19saW1pdF9xdHknIGlkPSdyb3dfbGltaXRfcXR5JyB2YWx1ZT0nMCc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nZGlzcGxheV9maWx0ZXJfY2QnIGlkPSdkaXNwbGF5X2ZpbHRlcl9jZCcgdmFsdWU9JzAnPjxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J2ZpbHRlcl9jb2x1bW5fZGVzYycgaWQ9J2ZpbHRlcl9jb2x1bW5fZGVzYycgdmFsdWU9Jyc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nUHJldmlld1Jlb3BlblJMMycgdmFsdWU9JwleCTQJOglFMjAwMDAxCToJRjIwMDAwMTAJOglyZXBvcnQJOgljb2x1bW4JOglSZXBvcnQgQ29sdW1ucyAJOglJdGVtIE5icgl+CTE4MDAJfAlTdG9yZSBOYnIJfgkyCXwJRGFpbHkJfgkzYgl8CVBPUyBTdG9yZSBDb3VudAl+CTI1MDIJfAlQT1MgU2FsZXMJfgkyNjA1CXwJUE9TIFF0eQl+CTI2MTAJfAlQT1MgQ29zdAl+CTI2MTgJfAlTSSBNVU1EIFF0eQl+CTE2MzAJfAlTSSBUb3RhbCBNVU1EICQJfgkxNjQwCXwJVG90YWwgQWRqIFF0eSAoIE9IICsgQlIgKQl+CTQ2OTMJfAlUb3RhbCBBZGogUmV0YWlsIEFtbnQgKCBPSCArIEJSICkJfgk0NTg0CXwJR3Jvc3MgU2hpcCBDb3N0CX4JMjg1MAl8CUdyb3NzIFNoaXAgUmV0YWlsCX4JMjg1NQl8CUdyb3NzIFNoaXAgUXR5CX4JMjg2MAl8CUhpc3QgT24gSGFuZCBRdHkJfgkzODU3CXwJT24gSGFuZCBBZGogUXR5CX4JNDUyMgl8CU9uIEhhbmQgQWRqIFJldGFpbCBBbW50CX4JNDY5Mgl8CUJhY2tyb29tIEFkaiBRdHkJfgk0Njg1CXwJQmFja3Jvb20gQWRqIFJldGFpbCBBbXQJfgk0NjkxCV4JMwk6CUUyMDAwMzcJOglGMTAwMDAxMAk6CXdoZW4JOglGdXp6eQk6CS0xCX4JU2VsZWN0aW9ucyBJbmNsdWRlCToJQnkgRnV6enkgRGF0ZXMJJAlUaW1lIFJhbmdlIDEgQ3VycmVudCBXZWVrCX4JSzAxdzAwCX4JMQl+CTEJfgk0CX4JMCc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nQWxpYXNSTDMnIHZhbHVlPScnPjxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J0xhbmd1YWdlQ29kZScgdmFsdWU9J0VORyc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0naW1wb3J0RmxhZycgdmFsdWU9J0ZhbHNlJz48aW5wdXQgdHlwZT0naGlkZGVuJyBuYW1lPSdpbXBvcnRNb3JlJyB2YWx1ZT0nJz48aW5wdXQgdHlwZT0naGlkZGVuJyBuYW1lPSd0b3RhbFRpbWVSYW5nZXMnIHZhbHVlPScwJz48L2Zvcm0+ZAIXDxYCHwAFVU1lbnUuYXNweD9xaWQ9UTY4MCZBcHBJZD0zMDAmcmVvcGVuPXRydWUmbGFuZ3VhZ2VDb2RlPUVORyZzZW5kdG9iYWNrPSZjZ0ZpbHRlcj0mZWtleT1kAhkPFgIfAQXzATxpbnB1dCB0eXBlPSdoaWRkZW4nIG5hbWU9J0VzZWwnIHZhbHVlPSdFMjAwMDAxJz48aW5wdXQgdHlwZT0naGlkZGVuJyBuYW1lPSdFc2VsJyB2YWx1ZT0nRTExMTAxJz48aW5wdXQgdHlwZT0naGlkZGVuJyBuYW1lPSdFc2VsJyB2YWx1ZT0nRTEwMTAyJz48aW5wdXQgdHlwZT0naGlkZGVuJyBuYW1lPSdFc2VsJyB2YWx1ZT0nRTIwMDAzNyc+PGlucHV0IHR5cGU9J2hpZGRlbicgbmFtZT0nRXNlbCcgdmFsdWU9J0UyMDAwMzQnPmQCJQ8WAh8ABWVTYXZlX1NjaGVkdWxlX1JlcG9ydHMuYXNweD9kaW1FbGVtZW50UmVwb3J0PSZhcHBsaWNhdGlvbmlkPTMwMCZpbXBvcnQ9RmFsc2Umb2xkcmVxdWVzdGlkPSZpbXBvcnRNb3JlPWRkj95EArze/oT0A9DxVnFgjyfGF/s=" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJNzM3Nzc1ODUzZGRxtpfGBUYA+E/S8MUQ/CBy63YELA==" />
+</div>
+
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWDwKV493jCALVg6e2CAKQ++W1AgLuheq3DQL0t6myDAKmuM2YAQLLgoiSCwKXvJiFBQKC6Nb4BQKRyMKkBwKmw8T3DQK6to/1DwKEtI6sCALGhYvVBAL6w6X3DlpJQnEFF9NI1l6hP5vNBnjo5arA" />
 </div>
   
-        
-        <div>
-        
-	   <iframe id="Building_Waiting" style="POSITION: absolute" name="Building_Waiting" frameborder="0" scrolling="no" width="100%" height="100%" src="Building_Waiting.aspx?applicationid=300">
-		</iframe>
-      </div>	
-       
-
-<script type="text/javascript">
-//<![CDATA[
-var iShowWait = 0;
-function ShowWaiting()
-{
-if(DoneLoaded == true || iShowWait > 75)
-{
-document.all['Building_Waiting'].style.zIndex = '-1';
-/*02-01-2008 - added if statement to only process this if modifying a custom group. This 
-code sectino was added here as when this is hidden, the frames are loaded.*/
-}
-else
-{
-document.all['Building_Waiting'].style.zIndex = '100';
-iShowWait++;
-window.setTimeout("ShowWaiting()", 200);
-}
-}
-ShowWaiting();
-function getSteps()
-{
-var iframesIds = 'E200001,E11101,E10102,E200037,E200034';
-var eKeySteps = iframesIds.split(",")
-var passedKey = '';
-var newStep = -1;
-/*loop through list to get real sequence number since database is wrong sometimes*/
-for(var i=0; i<eKeySteps.length; i++)
-{
-if(eKeySteps[i] == passedKey)
-{
-newStep = i;
-break;
-}
-}
-/*used for creating new groups (for custom groups), we want to automatically jump
-to the selected step (ekey)*/
-eval(top.menu.setMenu(newStep+1, "Report_Builder"));
-}
-function loadColumnsAtStart()
-{
-/*c1under this is needed for Japan*/
-document.getElementById('title').value = trimAll(document.getElementById('title').value);
-/*added to onLoad to force load the columns when available*/
-if(document.getElementById('columnframe').value!=""){
-var colFrame = document.getElementById('columnframe').value;
-eval("document." + colFrame + ".left.loadCols()");
-}
-/*c1under added the following line so that columns are always loaded.*/
-/* side note it only took about 1.5 days to figure this evil bit of code out*/
-/* because .right. does not work it has to be .mid. =)	*/
-for(vv=1;vv<totalEkeys;vv++){
-eval("document.content_" + vv + ".mid.addColTable()");
-}
-/*added to onLoad to for time when available*/
-
-if(document.getElementById('timeframe').value!=""){var allTimes = document.getElementById('timeframe').value;
-var getTimes = allTimes.split("|");
-for(gg=0;gg<getTimes.length-1;gg++) { // damoral --added loop for multi-times-- loop starts
-var colFrame = getTimes[gg];
-var now    = new Date();
-var Year   = now.getFullYear();
-var Mnt    = now.getMonth() + 1;
-var myRight = eval("document." + colFrame + ".right");
-eval("document." + colFrame + ".mid.addColTable()");
-var newRow = myRight.document.getElementById('coltable').insertRow(0);
-myRight.document.getElementById('ColHolder').height = 150;
-var newCell = newRow.insertCell();
-newCell.innerHTML = "From: <input style='width:60' id=fromrange type=text maxlength=6></input> To: <input style='width:60' id=torange type=text maxlength=6></input> <input  id='applyTime' type=button value='Apply Range' title='Apply Range' onclick='applyTimeRange()' class='btnLite' onmouseover='MouseHoverLite(this);' onmouseout='MouseNoHoverLite(this);'></input><input  id='buttonTAC' type=button value=Calculation Across Time Ranges onclick='showTACs();' style='visibility:hidden' class='btnLite' onmouseover='MouseHoverLite(this);' onmouseout='MouseNoHoverLite(this);'></input>";
-/*c1under for import this empty cell may not exist*/
-if(myRight.document.getElementById('empty_cell') != null)
-{
-myRight.document.getElementById('empty_cell').innerHTML = "<iframe id='my_cal' src='wm_calendar.aspx?applicationid=300&YEAR=" + Year + "&MONTH=" + Mnt +"&SAVE_TO=main_form.DATE_SEL&TYPE=2&FORMAT=1' name='my_cal' width='300' height='165' align='top' MARGINWIDTH='0' MARGINHEIGHT='0' SCROLLING='no' FRAMEBORDER='0' NORESIZE></iframe>";
-}
-}/* loop ends here*/
-}
-DoneLoaded = true;
-/*check to see if we are creating a new custom group and then check to see if */
-/*getCustomGroups is true before we get the ekeylist.*/
-/*are we reopening, if so, jump in here and do some checks, else simply go to getSteps()*/
-if (reopen == "true")
-{
-/*if getCustomGroups is true, then we need to jump to the getSteps function to process*/
-/*this is the original code line before custom groups was updated.*/
-eval(top.menu.setMenu(MemStep.length+1, "Report_Builder"));
-}
- else
-{
-getSteps();
-}
-}
-//]]>
-</script>
-</form>
-       <!-- Hidden for report_builder_mid.js-->
-       <input name="hdnReOpenJS" type="hidden" id="hdnReOpenJS" value="true" />
-       <input name="hdnEKeyList" type="hidden" id="hdnEKeyList" value="E200001,E11101,E10102,E200037,E200034" />
-       <input name="hdnAllKeyNumOnMemory" type="hidden" id="hdnAllKeyNumOnMemory" value="4,2,3,2" />
-       <input name="hdnAllEkeysonMemory" type="hidden" id="hdnAllEkeysonMemory" value="E200001,E11101,E200037,E10102" />            
-       <!-- End Hidden for report_builder_mid.js-->
-       <!-- Hidden for Report_Builder.js -->		
-		<input name="hdnTranslationToJS" type="hidden" id="hdnTranslationToJS" value="To" />
-		<input name="hdnTranslationFromJS" type="hidden" id="hdnTranslationFromJS" value="From" />
-		<input name="hdnTranslationApplyRangeJS" type="hidden" id="hdnTranslationApplyRangeJS" value="Apply Range" />
-		<!-- End Hidden for Report_Builder.js -->
-		
-		 <script type="text/javascript" language="javascript">
-		     ReOpen = document.getElementById("hdnReOpenJS").value;
-		     transTo = document.getElementById("hdnTranslationToJS").value;
-		     transFrom = document.getElementById("hdnTranslationFromJS").value;
-		     transApplyRange = document.getElementById("hdnTranslationApplyRangeJS").value;
-		</script>
-		
-        <!-- Main Memory Form -->
-       <form name='Memory'><input type='hidden' name='UserId' value='tys1414'><input type='hidden' name='Filter' value='1'><input type='hidden' name='Filter' value='2'><input type='hidden' name='Filter' value='3'><input type='hidden' name='Filter' value='4'><input type='hidden' name='Filter' value='5'><input type='hidden' name='Filter' value='6'><input type='hidden' name='Filter' value='7'><input type='hidden' name='Filter' value='8'><input type='hidden' name='Filter' value='9'><input type='hidden' name='Filter' value='10'><input type='hidden' name='Step' value='E200001	:	F2000010	:	report	:	column	:	Report Columns 	:	Item Nbr	~	1800	|	Store Nbr	~	2	|	Daily	~	3b	|	POS Store Count	~	2502	|	POS Sales	~	2605	|	POS Qty	~	2610	|	POS Cost	~	2618	|	SI MUMD Qty	~	1630	|	SI Total MUMD $	~	1640	|	Total Adj Qty ( OH + BR )	~	4693	|	Total Adj Retail Amnt ( OH + BR )	~	4584	|	Gross Ship Cost	~	2850	|	Gross Ship Retail	~	2855	|	Gross Ship Qty	~	2860	|	Hist On Hand Qty	~	3857	|	On Hand Adj Qty	~	4522	|	On Hand Adj Retail Amnt	~	4692	|	Backroom Adj Qty	~	4685	|	Backroom Adj Retail Amt	~	4691'><input type='hidden' name='Step' value='E11101	:	F1010131	:	what	:	wm_cat_group_family	:	-1	~	Selections Include	:	08 PETS &amp; SUPPLIES	~	A8	~	1	~	1	~	4	~	0	|	D1	:	S1	~	98 BAKERY	~	A98	~	1	~	1	~	4	~	0	|	D1	:	S1	~	80 SERVICE DELI	$	BULK DELI CASE	~	A80:P1317	~	1	~	1	~	4	~	0	|	D1	:	S1	~	80 SERVICE DELI	$	DELI GOURMET	~	A80:P1318	~	1	~	1	~	4	~	0	|	D1	:	S1	~	80 SERVICE DELI	$	MEAL SOLUTIONS	~	A80:P1321	~	1	~	1	~	4	~	0	|	D1	:	S1	~	80 SERVICE DELI	$	MISCELLANEOUS	~	A80:P1322	~	1	~	1	~	4	~	0	|	D1	:	S1	~	80 SERVICE DELI	$	SOUPS SANDWICHES SALADS	~	A80:P1319	~	1	~	1	~	4	~	0	|	D1	:	S1	~	80 SERVICE DELI	$	SRVC DELI TASK	~	A80:P5030	~	1	~	1	~	4	~	0	|	D1	:	S1	~	80 SERVICE DELI	$	STATE FEES	~	A80:P4236	~	1	~	1	~	4	~	0	|	D1	:	S1	~	80 SERVICE DELI	$	&#160;&#160;&#160;&#160;&#160;&#160; HOT DELI	$	DELI ROTISSERIE	~	A80:P1320:C3108	~	1	~	1	~	4	~	0	|	D1	:	S1	~	80 SERVICE DELI	$	&#160;&#160;&#160;&#160;&#160;&#160; HOT DELI	$	DELI SALADS AND MEAL SOLUTIONS	~	A80:P1320:C3102	~	1	~	1	~	4	~	0'><input type='hidden' name='Step' value='E200037	:	F1000010	:	when	:	Fuzzy	:	-1	~	Selections Include	:	By Fuzzy Dates	$	Time Range 1 Current Week	~	K01w00	~	1	~	1	~	4	~	0'><input type='hidden' name='Step' value='E10102	:	F101020	:	where	:	wm_store_type	:	-1	~	Selections Include	:	Store Type Breakdown	$	All Stores	~	DSS1	~	1	~	1	~	4	~	0'><input type='hidden' name='Step' value='5'><input type='hidden' name='Step' value='6'><input type='hidden' name='Step' value='7'><input type='hidden' name='Step' value='8'><input type='hidden' name='Step' value='9'><input type='hidden' name='Step' value='10'><input type='hidden' name='ExpTxt' value='1'><input type='hidden' name='ExpTxt' value='2'><input type='hidden' name='ExpTxt' value='3'><input type='hidden' name='ExpTxt' value='4'><input type='hidden' name='ExpTxt' value='5'><input type='hidden' name='ExpTxt' value='6'><input type='hidden' name='ExpTxt' value='7'><input type='hidden' name='ExpTxt' value='8'><input type='hidden' name='ExpTxt' value='9'><input type='hidden' name='ExpTxt' value='10'><input type='hidden' name='Format' value='4'><input type='hidden' name='Title' value=" zzz_2014_zzz_RLDS_DailyStoreItemWTDColumnsDailyForCurrentWeek_StoreDetail_Daily_002_001 "><input type='hidden' name='Compresed' value='1'><input type='hidden' name='Sched' value=''><input type='hidden' name='curr_step' value=''><input type='hidden' name='reopen' value='true'><input type='hidden' name='ReqId' value='29210604'><input type='hidden' name='qid' value='Q680'><input type='hidden' name='AppId' value='300'><input type='hidden' name='exe_id' value='264'><input type='hidden' name='DivId' value='1'><input type='hidden' name='CountryCode' value='US'><input type='hidden' name='SchedType' id='SchedType' value=''><input type='hidden' name='ExpireDate' id='ExpireDate' value=''><input type='hidden' name='Letter' value='65'><input type='hidden' name='row_limit_qty' id='row_limit_qty' value='0'><input type='hidden' name='display_filter_cd' id='display_filter_cd' value='0'><input type='hidden' name='filter_column_desc' id='filter_column_desc' value=''><input type='hidden' name='PreviewReopenRL3' value='	^	4	:	E200001	:	F2000010	:	report	:	column	:	Report Columns 	:	Item Nbr	~	1800	|	Store Nbr	~	2	|	Daily	~	3b	|	POS Store Count	~	2502	|	POS Sales	~	2605	|	POS Qty	~	2610	|	POS Cost	~	2618	|	SI MUMD Qty	~	1630	|	SI Total MUMD $	~	1640	|	Total Adj Qty ( OH + BR )	~	4693	|	Total Adj Retail Amnt ( OH + BR )	~	4584	|	Gross Ship Cost	~	2850	|	Gross Ship Retail	~	2855	|	Gross Ship Qty	~	2860	|	Hist On Hand Qty	~	3857	|	On Hand Adj Qty	~	4522	|	On Hand Adj Retail Amnt	~	4692	|	Backroom Adj Qty	~	4685	|	Backroom Adj Retail Amt	~	4691	^	3	:	E200037	:	F1000010	:	when	:	Fuzzy	:	-1	~	Selections Include	:	By Fuzzy Dates	$	Time Range 1 Current Week	~	K01w00	~	1	~	1	~	4	~	0'><input type='hidden' name='AliasRL3' value=''><input type='hidden' name='LanguageCode' value='ENG'><input type='hidden' name='importFlag' value='False'><input type='hidden' name='importMore' value=''><input type='hidden' name='totalTimeRanges' value='0'></form><!-- End Main Memory Form-->
-       
-       <script language="javascript" type="text/javascript" src="Scripts/Report_Builder_Mid.js"></script>
-       <iframe id="menu" style="LEFT: 0px; POSITION: absolute; TOP: 0px" name="menu" frameBorder="0" width="100%" scrolling="no" height="70" src="Menu.aspx?qid=Q680&amp;AppId=300&amp;reopen=true&amp;languageCode=ENG&amp;sendtoback=&amp;cgFilter=&amp;ekey=">
-		</iframe>
-		<input type='hidden' name='Esel' value='E200001'><input type='hidden' name='Esel' value='E11101'><input type='hidden' name='Esel' value='E10102'><input type='hidden' name='Esel' value='E200037'><input type='hidden' name='Esel' value='E200034'>
-		<!--'Use javascript to position iframes on the page based upon screen resolution.
-		'Each iframe source is stored in asp iframeList variable delimited by commas.
-		'Javascript splits at the comma, replaces the height param based upon screen size
-		'and writes the iframe to the page. The preview iframe is written separately
-		'because its height is the remainder of the screen size. The menu iframe is also
-		'written separately because its size is always the same.-->
-		 <!-- Hidden for report_builder_mid2.js-->
-       <input name="hdnFrameList" type="hidden" id="hdnFrameList" value="&lt;iframe src='bot_wiz.aspx?AppId=300&amp;getCustomGroups=False&amp;groupName=&amp;jobid=29210604&amp;scopeValue=&amp;qid=Q680&amp;DivId=1&amp;e_sel=E200001&amp;desc=Columns&amp;step=1&amp;reopen=true&amp;country_cd=US&amp;languageCode=ENG' id='content_1' name='content_1' width='100%' align='top' MARGINWIDTH='0' MARGINHEIGHT='0' SCROLLING='no' FRAMEBORDER='0' style='position:absolute;  top:60; left:0; height:400; z-index:-1; visibility:hidden' NORESIZE>&lt;/iframe>,&lt;iframe src='bot_wiz.aspx?AppId=300&amp;getCustomGroups=False&amp;groupName=&amp;jobid=29210604&amp;scopeValue=&amp;qid=Q680&amp;DivId=1&amp;e_sel=E11101&amp;desc=Items&amp;step=2&amp;reopen=true&amp;country_cd=US&amp;languageCode=ENG' id='content_2' name='content_2' width='100%' align='top' MARGINWIDTH='0' MARGINHEIGHT='0' SCROLLING='no' FRAMEBORDER='0' style='position:absolute;  top:60; left:0; height:400; z-index:-1; visibility:hidden' NORESIZE>&lt;/iframe>,&lt;iframe src='bot_wiz.aspx?AppId=300&amp;getCustomGroups=False&amp;groupName=&amp;jobid=29210604&amp;scopeValue=&amp;qid=Q680&amp;DivId=1&amp;e_sel=E10102&amp;desc=Locations&amp;step=3&amp;reopen=true&amp;country_cd=US&amp;languageCode=ENG' id='content_3' name='content_3' width='100%' align='top' MARGINWIDTH='0' MARGINHEIGHT='0' SCROLLING='no' FRAMEBORDER='0' style='position:absolute;  top:60; left:0; height:400; z-index:-1; visibility:hidden' NORESIZE>&lt;/iframe>,&lt;iframe src='bot_wiz.aspx?AppId=300&amp;getCustomGroups=False&amp;groupName=&amp;jobid=29210604&amp;scopeValue=&amp;qid=Q680&amp;DivId=1&amp;e_sel=E200037&amp;desc=Times&amp;step=4&amp;reopen=true&amp;country_cd=US&amp;languageCode=ENG' id='content_4' name='content_4' width='100%' align='top' MARGINWIDTH='0' MARGINHEIGHT='0' SCROLLING='no' FRAMEBORDER='0' style='position:absolute;  top:60; left:0; height:400; z-index:-1; visibility:hidden' NORESIZE>&lt;/iframe>,&lt;iframe src='bot_wiz.aspx?AppId=300&amp;getCustomGroups=False&amp;groupName=&amp;jobid=29210604&amp;scopeValue=&amp;qid=Q680&amp;DivId=1&amp;e_sel=E200034&amp;desc=Options&amp;step=5&amp;reopen=true&amp;country_cd=US&amp;languageCode=ENG' id='content_5' name='content_5' width='100%' align='top' MARGINWIDTH='0' MARGINHEIGHT='0' SCROLLING='no' FRAMEBORDER='0' style='position:absolute;  top:60; left:0; height:400; z-index:-1; visibility:hidden' NORESIZE>&lt;/iframe>,&lt;iframe src='schedule.aspx?dimElementReport=&amp;AppId=300&amp;exe_id=264&amp;qid=Q680&amp;e_sel=E200034&amp;import=False' name='content_6' id='submit' width='100%' align='top' MARGINWIDTH='0' MARGINHEIGHT='0' SCROLLING='no' FRAMEBORDER='0' style='position:absolute; top:60; left:0; height:400; z-index:-1; visibility:hidden' NORESIZE>&lt;/iframe>" />
-       <input name="hdnDivisionId" type="hidden" id="hdnDivisionId" value="1" />
-       <input name="hdnCountryCode" type="hidden" id="hdnCountryCode" value="US" />
-       <input name="hdnImport" type="hidden" id="hdnImport" value="False" />
-       <input name="hdnApplicationId" type="hidden" id="hdnApplicationId" value="300" />       
-       <!-- End Hidden for report_builder_mid2.js-->
-		<script language="javascript" type="text/javascript" src="Scripts/Report_Builder_Mid2.js"></script>
-		<iframe id="saved_save_request" name="saved_save_request" width="0" scrolling="no" height="0" style="border:groove 2px black" src="Save_Schedule_Reports.aspx?dimElementReport=&amp;applicationid=300&amp;import=False&amp;oldrequestid=&amp;importMore="></iframe>
-	       
-    
-    
-    <form name="globalVars">
-			<input name="DecimalChar" type="hidden" id="DecimalChar" value="." />
-			<input name="CommaChar" type="hidden" id="CommaChar" value="," />
-			<input name="DateSeparator" type="hidden" id="DateSeparator" value="/" />
-			<input name="DateFormat" type="hidden" id="DateFormat" value="M/d/yyyy" />
-			<input id="columnframe" type="hidden" name="columnframe"/> 
-			<input id="timeframe" type="hidden" name="timeframe"/>
-			<input name="country_cd" type="hidden" id="country_cd" value="US" /> 
-			<input id="TimeSelFlag" type="hidden" value="false" name="TimeSelFlag"/>
-		</form>	
-		
+    <input type="hidden" name="hdnAppId" id="hdnAppId" />
+    <input type="hidden" name="hdnExeId" id="hdnExeId" />
+    <input type="hidden" name="hdnAccessCode" id="hdnAccessCode" />
+    <input type="hidden" name="hdnCriteria" id="hdnCriteria" />
+    <input type="hidden" name="hdnUsers" id="hdnUsers" />
+    <input type="hidden" name="hdnQId" id="hdnQId" />
+    <input name="hdnReqName" type="hidden" id="hdnReqName" value="testFromTester" />
+    <input type="hidden" name="hdnCompressed" id="hdnCompressed" />
+    <input type="hidden" name="hdnFormatType" id="hdnFormatType" />
+    <input type="hidden" name="hdnLang" id="hdnLang" />
+    <input name="hdnRetTxt" type="hidden" id="hdnRetTxt" value="Request was updated successfully." />
+    <input name="hdnReqId" type="hidden" id="hdnReqId" value="29369428" />
+    <input type="hidden" name='hdnSchedType' id='hdnSchedType' />
+    <input type="hidden" name='hdnExpireDate' id='hdnExpireDate' />
+    <input type="hidden" name='hdnParentReport' id='hdnParentReport' />
+    <input type="hidden" name='hdnRow_limit_qty' id='hdnRrow_limit_qty' />
+    <input type="hidden" name='hdnDisplay_filter_cd' id='hdnDisplay_filter_cd' />
+    <input type="hidden" name='hdnFilter_column_desc' id='hdnFilter_column_desc' />
+    <input type="hidden" name='hdnShow_alerts' id='hdnShow_alerts' />
+    <input name="hdnCountryCode" type="hidden" id="hdnCountryCode" value="US" />
+    <input type="hidden" id="hdnErfFlag" name="hdnErfFlag" />
+    <input type="hidden" id="HdnMultiSchedInd" name="HdnMultiSchedInd" />
+    <input type="hidden" id="HdnSubmitFreq" name="HdnSubmitFreq" />
+    <input name="hdnPreviousSchedStatus" type="hidden" id="hdnPreviousSchedStatus" />
+    <input name="hdnApplicationId" type="hidden" id="hdnApplicationId" value="300" />
+    <input name="hdnImportMore" type="hidden" id="hdnImportMore" />
+    <input name="hdnShowAlerts" type="hidden" id="hdnShowAlerts" value="1" />
+    <input name="hdnImport" type="hidden" id="hdnImport" value="0" />
+    <input name="hdnScheduleType" type="hidden" id="hdnScheduleType" />
+    <input name="hdnTransReport" type="hidden" id="hdnTransReport" value="Report" />
+    <input name="hdnTransWasImported" type="hidden" id="hdnTransWasImported" value="was imported" />
+    <input name="hdnTransWasSaved" type="hidden" id="hdnTransWasSaved" value="was saved successfully" />
+    <input name="hdnDimElementReport" type="hidden" id="hdnDimElementReport" />
+    </form>
 </body>
 </html>

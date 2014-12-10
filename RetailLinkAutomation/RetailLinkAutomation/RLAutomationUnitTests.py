@@ -1,5 +1,5 @@
 from . import *
-
+import codecs
 
 def testAll():
 	autoBot1 = RetailLinkAutomator()
@@ -11,8 +11,27 @@ def testAll():
 #	testGoToDSSPage(autoBot1) # passed
 #	testGoToMyReports(autoBot1) # passed
 #	testExtractReports(autoBot1) # passed
-	testGetReportDef(autoBot1)
+#	testGetReportDef(autoBot1) # passed for all reports
+	testSaveReportDefinition(autoBot1)
 
+""" Function to test the saving of a report definition 
+"""
+def testSaveReportDefinition(autoBot):
+	print("\r\n********  BEGIN TEST FOR testSaveReportDefinition()  **************")
+	loginCredList = readLoginInfoFromFile()
+	
+	autoBot.User = loginCredList[0]['User']
+	autoBot.Pass = loginCredList[0]['Pass']
+	reports = autoBot.getReportsForPattern("zzz_2014_zzz_RLDS_DailyStoreItemWTDColumnsDailyForCurrentWeek_StoreDetail_Daily_002_001")
+	#autoBot.getReportsForPattern("^zzz_2014_zzz(.*)")
+	print("Got report %s" % reports[0].Name)
+	raw_input("About to test save. Hit any key...")
+	autoBot.saveReport(reports[0], name="testFromTester")
+	autoBot.writeLastResponse()
+	
+	print("Method exited successfully")
+	print("########## END TEST FOR testSaveReportDefinition()  ################\r\n")		
+	
 """ Function to test pulling a report definition out of a 
 	saved retail link report
 """
@@ -28,7 +47,18 @@ def testGetReportDef(autoBot):
 	reports = [report for report in reports if report.Name == "zzz_2014_zzz_RLDS_DailyStoreItemWTDColumnsDailyForCurrentWeek_StoreDetail_Daily_002_001"]
 	autoBot.getReportDefs(reports)
 	
-	print("Method existed successfully")
+	with codecs.open("Output/reports.txt", "wb", "utf8") as writer:
+		for report in reports:
+			print("Writing %s" % report.Name)
+			print(report.getParamsForPost)
+			#print("ID:%s, Name: %s, Definition:\n%s" % (report.ID, report.Name, report.Definition))
+			#print("*******************************************\n\n")
+			writer.write(u"ID:%s, Name: %s, Definition:\n%s\n\n" % (report.ID, report.Name, report.Definition))
+			writer.write(unicode(report.getParamsForPost()))
+			writer.write(u"\n\n*******************************************\n\n")
+		
+	
+	print("Method exited successfully")
 	print("########## END TEST FOR testGetReportDef()  ################\r\n")		
 	
 """ Function to test extraction of reports from the MyReports page """
@@ -45,7 +75,7 @@ def testExtractReports(autoBot):
 	for report in reports:
 		print("ID: %s, Name: %s	" % (report.ID, report.Name))
 
-	print("Method existed successfully")
+	print("Method exited successfully")
 	print("########## END TEST FOR testExtractReports()  ################\r\n")			
 	
 """ Function to test the successful open of the My Reports page """
@@ -62,7 +92,7 @@ def testGoToMyReports(autoBot):
 	print("Response html of My Reports page written to Output/lastResponse.html")
 	autoBot.writeLinks()
 	print("Links on the My Reports page page have been written to Output/currentPageLinks.txt")	
-	print("Method existed successfully")
+	print("Method exited successfully")
 	print("########## END TEST FOR testGoToMyReports()  ################\r\n")			
 	
 """ Function to test the successful transition to the DSS page """
@@ -84,7 +114,7 @@ def testGoToDSSPage(autoBot):
 	print("Response html of DSS page written to Output/lastResponse.html")
 	autoBot.writeLinks()
 	print("Links on the DSS page page have been written to Output/currentPageLinks.txt")	
-	print("Method existed successfully")
+	print("Method exited successfully")
 	print("########## END TEST FOR testgoToDSSPage()  ################\r\n")	
 	
 
@@ -113,7 +143,7 @@ def testLogin(autoBot):
 	print("Response html written to Output/lastResponse.html")
 	autoBot.writeLinks()
 	print("Links on the current page have been written to Output/currentPageLinks.txt")
-	print("Method existed successfully")
+	print("Method exited successfully")
 	print("########## END TEST FOR loginFromLoginPage()  ################\r\n")		
 
 """ Function to test multiple logins with separate browser objects
@@ -130,14 +160,14 @@ def testSaveReportDef():
 def testReadLoginInfoFromFile():
 	print("\r\n********  BEGIN TEST FOR readLoginInfoFromFile()  ************")
 	loginCredList = readLoginInfoFromFile()
-	print("Method existed successfully")
+	print("Method exited successfully")
 	print("Login credential list: %s" % loginCredList)
 	print("#########  END TEST FOR readLoginInfoFromFile()  #################\r\n")
 
 def testGetLoginPage(autoBot):
 	print("\r\n********  BEGIN TEST FOR getLoginPage()  **************")
 	response = autoBot.getLoginPage()
-	print("Method existed successfully")
+	print("Method exited successfully")
 	#print(response.read())
 	print("Length of response: %s" % len(response.read()))
 	print("########## END TEST FOR getLoginPage()  ################\r\n")	
@@ -145,11 +175,11 @@ def testGetLoginPage(autoBot):
 def testPrintForms(autoBot):
 	print("\r\n********  BEGIN TEST FOR printForms()  ************")
 	autoBot.printForms()
-	print("Method existed successfully")
+	print("Method exited successfully")
 	print("#########  END TEST FOR printForms()  #################\r\n")
 		
 def testPrintControls(autoBot):
 	print("\r\n********  BEGIN TEST FOR printControls()  ************")
 	autoBot.printControls()
-	print("Method existed successfully")
+	print("Method exited successfully")
 	print("#########  END TEST FOR printControls()  #################\r\n")

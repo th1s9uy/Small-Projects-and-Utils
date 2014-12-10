@@ -6,6 +6,7 @@
 from . import *
 import mechanize
 import urllib
+import re
 from bs4 import BeautifulSoup as BS
 
 
@@ -21,6 +22,21 @@ class RetailLinkAutomator(object):
 		self.br.addheaders = [('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E; InfoPath.3; MS-RTC EA 2')]		
 		self.User = User
 		self.Pass = Pass
+
+	""" High level message to log in to RL """ 
+	def login(self):
+		self.getLoginPage()
+		self.loginFromLoginPage()
+		
+	""" High level message to log in and get all reports matching pattern """
+	def getReportsForPattern(self, pattern):
+		self.login()
+		self.goToDSSPage()
+		self.goToMyReports()
+		reports = self.extractReports()
+		
+		reports = [report for report in reports if re.match(pattern, report.Name)]
+		return self.getReportDefs(reports)
 		
 
 	""" Function that will use the class's browser object 
@@ -48,6 +64,18 @@ class RetailLinkAutomator(object):
 		passCtrl.value = self.Pass
 		
 		return self.br.submit()
+	
+	
+	""" Function to save a report to the current instance of RL """
+	def saveReport(self, report, name=None):
+		postUrl = "https://retaillink.wal-mart.com/decision_support/Save_Schedule_Reports.aspx"
+		
+		if(name != None):
+			report.hdnReqName = name
+		
+		params = report.getParamsForPost()
+		data = urllib.urlencode(params)
+		return self.br.open(postUrl,data)
 	
 	""" Function that will go to the DSS Link """
 	def goToDSSPage(self):
@@ -81,7 +109,10 @@ class RetailLinkAutomator(object):
 	def getReportDefs(self, reports):
 		for report in reports:
 			self.getReportDefPage(report.ID)
-			report.Definition = self.extractReportDef()
+			report = self.extractReportDef(report)
+			
+		return reports
+			
 		
 	""" Function that gets the response page with definition in the HTML for
 		a report ID
@@ -104,52 +135,88 @@ class RetailLinkAutomator(object):
 	""" Function to extract the reports definition form or raw HTML,
 		whichever is easier.
 	"""
-	def extractReportDef(self):
-		self.writeControls()
-		self.writeLastResponse()
+	def extractReportDef(self, report):
+		#self.writeControls()
+		#self.writeLastResponse()
 		
 		soup = BS(self.br.response().read())
 		for eKeyListTag in soup.find_all("input", {"id":"hdnAllEkeysonMemory"}):				
 			eKeyList = eKeyListTag["value"].split(",")
-			print(eKeyList)
+			#print(eKeyList)
 			
 		for eKeyNumListTag in soup.find_all("input", {"id":"hdnAllKeyNumOnMemory"}):				
 			eKeyNumList = eKeyNumListTag["value"].split(",")
-			print(eKeyNumList)
-		
+			#print(eKeyNumList)
+					
 		self.br.select_form("Memory")
-		criteria = self.buildCriteriaString(eKeyList, eKeyNumList)
-		return criteria
+		report.Definition = self.buildCriteriaString(eKeyList, eKeyNumList)
+		report = self.setAllReportProps(report)
+		return report
+	
+	""" Function to set all the extra properies the report needs
+		when being saved 
+	"""
+	def setAllReportProps(self, report):
+		report.hdnAppId  = self.br["AppId"]
+		report.hdnExeId = self.br["exe_id"]
+		report.hdnAccessCode = "P"
+		report.hdnUsers = ""
+		report.hdnQId = self.br["qid"]
+		report.hdnCompressed = self.br["Compresed"]
+		report.hdnFormatType = self.br["Format"]
+		report.hdnLang = ""
+		report.hdnRetTxt = ""
+		report.hdnReqId = "-1"
+		report.hdnSchedType = self.br["SchedType"]
+		report.hdnExpireDate = self.br["ExpireDate"]
+		report.hdnParentReport = ""
+		report.hdnRow_limit_qty = "" # self.br["row_limit_qty"]
+		report.hdnDisplay_filter_cd = "" # self.br["display_filter_cd"]
+		report.hdnFilter_column_desc = self.br["filter_column_desc"]
+		report.hdnShow_alerts = ""
+		report.hdnCountryCode = self.br["CountryCode"]
+		report.hdnErfFlag = ""
+		report.HdnMultiSchedInd = ""
+		report.HdnSubmitFreq = ""
+		report.hdnPreviousSchedStatus = ""
+		report.hdnApplicationId = "0"
+		report.hdnImportMore = self.br["importMore"]
+		report.hdnShowAlerts = "1"
+		report.hdnImport = "0"
+		report.hdnScheduleType = self.br["SchedType"]
+		report.hdnTransReport = "Report"
+		report.hdnTransWasImported = "was imported"
+		report.hdnTransWasSaved = "was saved successfully"
+		report.hdnDimElementReport = ""
+		
 	
 	""" Function to build out the criteria string that will
 		be the definition of the report
 	"""
 	def buildCriteriaString(self, eKeyList, eKeyNumList):	
-		sep1 = "\t^\t"
-		sep2 = "\t:\t"
+		sep1 = u"\t^\t"
+		sep2 = u"\t:\t"
 		stepList = []
-		criteria = ""
+		criteria = u""
 		
 		# Get all the step controls
 		for control in self.br.form.controls:
 			if(control.name == "Step"):
-				stepList.append(control.value)				
+				#print("Control.value type: %s" % type(control.value))
+				#http://stackoverflow.com/questions/2365411/python-convert-unicode-to-ascii-without-errors
+				unicodeValue = control.value.decode("windows-1252")
+				stepList.append(unicodeValue)			
 		
 		# Loop over the valid Ekeys and extract them from the steps
 		for i in xrange(len(eKeyList)):
-			eKey = str(eKeyList[i])
-			eKeyNum = str(eKeyNumList[i])
+			eKey = unicode(eKeyList[i])
+			eKeyNum = unicode(eKeyNumList[i])
 			
 			for step in stepList:
 				if(eKey in step):
 					criteria = criteria + sep1 + eKeyNum + sep2 + step
 		
-		criteria = criteria.lstrip(sep1)
-		
-		print(criteria)
-		with open("Output\criteria.txt", "wb") as writer:
-			writer.write(criteria)
-			
+		criteria = criteria.lstrip(sep1)		
 		return criteria
 		
 	
