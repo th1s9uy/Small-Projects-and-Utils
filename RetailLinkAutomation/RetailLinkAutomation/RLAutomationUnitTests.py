@@ -12,8 +12,50 @@ def testAll():
 #	testGoToMyReports(autoBot1) # passed
 #	testExtractReports(autoBot1) # passed
 #	testGetReportDef(autoBot1) # passed for all reports
-	testSaveReportDefinition(autoBot1)
-
+#	testSaveReportDefinition(autoBot1) # passed for 1
+#	testEnumFolders(autoBot1) # passed, including recycle bin and system generated folders
+#	testMoveReportToFolder(autoBot1) # Successfully tested, bia
+	
+	
+	
+""" Function that will test functionality to move reports to a specific folder
+"""
+def testMoveReportToFolder(autoBot):
+	print("\r\n********  BEGIN TEST FOR testMoveReportToFolder()  **************")
+	loginCredList = readLoginInfoFromFile()
+	
+	autoBot.User = loginCredList[0]['User']
+	autoBot.Pass = loginCredList[0]['Pass']
+	
+	folders = autoBot.getFolders()
+	
+	for folder in folders:
+		print("Folder name: %s, id: %s" % (folder.Name, folder.ID))
+		
+	print("Moving report to folder: 7201661")
+	
+	autoBot.moveReportToFolder("29210604", "7201661")
+	
+	print("Method exited successfully")
+	print("########## END TEST FOR testMoveReportToFolder()  ################\r\n")		
+	
+""" Function that will test functionality to enumerate folders for an ID
+"""
+def testEnumFolders(autoBot):
+	print("\r\n********  BEGIN TEST FOR testEnumFolders()  **************")
+	loginCredList = readLoginInfoFromFile()
+	
+	autoBot.User = loginCredList[0]['User']
+	autoBot.Pass = loginCredList[0]['Pass']
+	
+	folders = autoBot.getFolders()
+	
+	for folder in folders:
+		print("Folder name: %s, id: %s" % (folder.Name, folder.ID))
+	
+	print("Method exited successfully")
+	print("########## END TEST FOR testEnumFolders()  ################\r\n")		
+	
 """ Function to test the saving of a report definition 
 """
 def testSaveReportDefinition(autoBot):

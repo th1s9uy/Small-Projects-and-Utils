@@ -6,6 +6,7 @@
 from . import *
 import mechanize
 import urllib
+import json
 import re
 from bs4 import BeautifulSoup as BS
 
@@ -27,6 +28,51 @@ class RetailLinkAutomator(object):
 	def login(self):
 		self.getLoginPage()
 		self.loginFromLoginPage()
+		
+		
+	""" Method to move a report id to a folder id """
+	def moveReportToFolder(self, reportId, folderId):
+		postUrl = "https://retaillink.wal-mart.com/decision_support/mySavedReports.aspx/SaveNewChildParent"
+		req = mechanize.Request(postUrl)
+		req.add_header('Content-Type','application/json')
+		params = {"folderId":folderId,"reportId":reportId,"userId":self.User}
+		data = 	json.dumps(params)
+		return self.br.open(req,data)
+		
+		
+	""" High level function to get all folders for an ID
+	"""
+	def getFolders(self):
+		self.login()
+		self.goToDSSPage()
+		self.goToMyReports()
+		
+		self.writeLastResponse()		
+		soup = BS(self.br.response().read())
+
+		folders = []
+		#for tag in soup.find_all("span", {"onclick":re.compile("selectFolder\('FF")}):
+		for tag in soup.find_all("span", {"id":re.compile("^S2")}):
+			folders.append(self.getFolderFromSpan(tag))
+			
+		return folders
+		
+	""" Function to handle extracting information from HTML bits
+	"""
+	def getFolderFromSpan(self, tag):
+		name = tag.string
+		
+		#print("ID attribute: %s" % tag["id"])
+		
+		#HTML has: selectFolder('FF7171159');
+		#onclickAttr = tag["onclick"]
+		#m = re.match("selectFolder\('FF(?P<folderId>\d+)'\);", onclickAttr)
+		spId = tag["id"]
+		m = re.match("S2(?P<folderId>.*)", spId)
+		id = m.group('folderId')
+		
+		return RetailLinkFolder(ID=id, Name=name)
+		
 		
 	""" High level message to log in and get all reports matching pattern """
 	def getReportsForPattern(self, pattern):

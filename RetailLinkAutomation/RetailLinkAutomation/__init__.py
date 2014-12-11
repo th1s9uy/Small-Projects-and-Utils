@@ -2,6 +2,7 @@
 	http://en.wikibooks.org/wiki/Python_Programming/Modules
 """
 from RetailLinkReport import *
+from RetailLinkFolder import *
 from RetailLinkAutomator import *
 from RLAutomationUnitTests import *
  
