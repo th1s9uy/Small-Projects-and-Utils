@@ -23,11 +23,13 @@ class RetailLinkAutomator(object):
 		self.br.addheaders = [('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E; InfoPath.3; MS-RTC EA 2')]		
 		self.User = User
 		self.Pass = Pass
+		self.loggedIn = False
 
-	""" High level message to log in to RL """ 
+	""" High level method to log in to RL """ 
 	def login(self):
 		self.getLoginPage()
 		self.loginFromLoginPage()
+		self.loggedIn = True
 		
 		
 	""" Method to move a report id to a folder id """
@@ -75,14 +77,19 @@ class RetailLinkAutomator(object):
 		
 		
 	""" High level message to log in and get all reports matching pattern """
-	def getReportsForPattern(self, pattern):
-		self.login()
+	def getReportsForPattern(self, pattern, getDefs=True):
+		if(not(self.loggedIn)):
+			self.login()
 		self.goToDSSPage()
 		self.goToMyReports()
 		reports = self.extractReports()
 		
 		reports = [report for report in reports if re.match(pattern, report.Name)]
-		return self.getReportDefs(reports)
+		
+		if(getDefs):
+			reports = self.getReportDefs(reports)
+		
+		return reports
 		
 
 	""" Function that will use the class's browser object 
@@ -114,6 +121,8 @@ class RetailLinkAutomator(object):
 	
 	""" Function to save a report to the current instance of RL """
 	def saveReport(self, report, name=None):
+		if(not(self.loggedIn)):
+			self.login()
 		postUrl = "https://retaillink.wal-mart.com/decision_support/Save_Schedule_Reports.aspx"
 		
 		if(name != None):
@@ -121,7 +130,29 @@ class RetailLinkAutomator(object):
 		
 		params = report.getParamsForPost()
 		data = urllib.urlencode(params)
-		return self.br.open(postUrl,data)
+		response = self.br.open(postUrl,data)
+		
+		if(not(self.checkSaveSuccess(response))):
+			raise RLSaveException("Error saving report")
+		
+		return response
+	
+	""" Function to check for a successful save """
+	def checkSaveSuccess(self, response):
+		
+		self.writeLastResponse()
+		
+		soup = BS(response.read())
+		
+		#<input name="hdnRetTxt" type="hidden" id="hdnRetTxt" value="Request was updated successfully." />
+		#<input name="hdnReqId" type="hidden" id="hdnReqId" value="29379513" />
+		for tag in soup.find_all("input", {"id":"hdnRetTxt"}):
+			val = tag["value"]
+			
+		if(val == "Request was updated successfully."):
+			return True
+		else:
+			return False
 	
 	""" Function that will go to the DSS Link """
 	def goToDSSPage(self):
