@@ -2,7 +2,7 @@ from . import *
 import codecs
 
 def testAll():
-#	autoBot1 = RetailLinkAutomator()
+	autoBot1 = RetailLinkAutomator()
 #	testGetLoginPage(autoBot1) # passed
 #	testReadLoginInfoFromFile() # passed
 #	testPrintForms(autoBot1) # passed
@@ -15,37 +15,56 @@ def testAll():
 #	testSaveReportDefinition(autoBot1) # passed for 1
 #	testEnumFolders(autoBot1) # passed, including recycle bin and system generated folders
 #	testMoveReportToFolder(autoBot1) # Successfully tested, bia
-	testMoveReportsToAnotherID() # Successfully moved 64 reports. Spot checked that they run successfully. 
+#	testMoveReportsToAnotherID() # Successfully moved 64 reports. Spot checked that they run successfully. 
+	testRenameReports()
 
+""" Function to test renaming reports """
+def testRenameReports():
+	print("\r\n********  BEGIN TEST FOR testRenameReports()  **************")
+	autoBot0 = RetailLinkAutomator()
+	loginCredList = readLoginInfoFromFile()
+	autoBot0.User = loginCredList[0]['User']
+	autoBot0.Pass = loginCredList[0]['Pass']
+	
+	reports = autoBot0.getReportsForPattern("zzz_2014_zzz")
+	
+	for report in reports:
+		print(report.Name)
+		newReportName = re.sub("zzz_2014_zzz_RLDS_(.*)", "TRA_\g<1>", report.Name)
+		print(newReportName)
+		autoBot0.saveReport(report, name=newReportName, rename=True)
+		
+	print("Method exited successfully")
+	print("########## END TEST FOR testRenameReports()  ################\r\n")		
 """ Function that will move a report from one ID to the next 
 """	
 def testMoveReportsToAnotherID():
 	print("\r\n********  BEGIN TEST FOR testMoveReportsToAnotherID()  **************")
-	autoBotJapril = RetailLinkAutomator()
-	autoBotMike = RetailLinkAutomator()
+	autoBot0 = RetailLinkAutomator()
+	autoBot1 = RetailLinkAutomator()
 	loginCredList = readLoginInfoFromFile()
 	
-	autoBotJapril.User = loginCredList[0]['User']
-	autoBotJapril.Pass = loginCredList[0]['Pass']
+	autoBot0.User = loginCredList[0]['User']
+	autoBot0.Pass = loginCredList[0]['Pass']
 	
-	autoBotMike.User = loginCredList[1]['User']
-	autoBotMike.Pass = loginCredList[1]['Pass']
+	autoBot1.User = loginCredList[1]['User']
+	autoBot1.Pass = loginCredList[1]['Pass']
 	
-	reports = autoBotJapril.getReportsForPattern("zzz_2014_zzz")
+	reports = autoBot0.getReportsForPattern("RLDS_")
 	
 	print("Got %s reports" % len(reports))
 	#raw_input("Hit any key to begin moving reports...")
 	
 	for report in reports:
 		print("Saving report %s: " % report.Name)
-		autoBotMike.saveReport(report)
+		autoBot1.saveReport(report)
 		
 	#raw_input("Moved all reports. Hit any key to move them to Category 2014 folder...")
-	mikeMovedReports = autoBotMike.getReportsForPattern("zzz_2014_zzz", getDefs=False)
+	movedReports = autoBot1.getReportsForPattern("RLDS_", getDefs=False)
 	
-	for report in mikeMovedReports:
+	for report in movedReports:
 		print("Moving report %s: " % report.Name)
-		autoBotMike.moveReportToFolder(report.ID, "7201699")
+		autoBot1.moveReportToFolder(report.ID, "7201722")
 	
 	print("Method exited successfully")
 	print("########## END TEST FOR testMoveReportsToAnotherID()  ################\r\n")		
@@ -115,14 +134,10 @@ def testSaveReportDefinition(autoBot):
 def testGetReportDef(autoBot):
 	print("\r\n********  BEGIN TEST FOR testGetReportDef()  **************")
 	loginCredList = readLoginInfoFromFile()
-	autoBot.getLoginPage()
-	autoBot.loginFromLoginPage(loginCredList[0]['User'], loginCredList[0]['Pass'])
-	autoBot.goToDSSPage()
-	autoBot.goToMyReports()
-	reports = autoBot.extractReports()
-	
-	reports = [report for report in reports if report.Name == "zzz_2014_zzz_RLDS_DailyStoreItemWTDColumnsDailyForCurrentWeek_StoreDetail_Daily_002_001"]
-	autoBot.getReportDefs(reports)
+	autoBot.User = loginCredList[0]['User']
+	autoBot.Pass = loginCredList[0]['Pass']
+
+	reports = autoBot.getReportsForPattern("^TRA_.*")
 	
 	with codecs.open("Output/reports.txt", "wb", "utf8") as writer:
 		for report in reports:

@@ -120,13 +120,16 @@ class RetailLinkAutomator(object):
 	
 	
 	""" Function to save a report to the current instance of RL """
-	def saveReport(self, report, name=None):
+	def saveReport(self, report, name=None, rename=False):
 		if(not(self.loggedIn)):
 			self.login()
 		postUrl = "https://retaillink.wal-mart.com/decision_support/Save_Schedule_Reports.aspx"
 		
 		if(name != None):
 			report.hdnReqName = name
+		
+		if(rename == True):
+			report.hdnReqId = report.ID
 		
 		params = report.getParamsForPost()
 		data = urllib.urlencode(params)
